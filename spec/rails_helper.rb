@@ -3,8 +3,10 @@ ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../config/environment', __dir__)
 # Prevent database truncation if the environment is production
 abort('The Rails environment is running in production mode!') if Rails.env.production?
+
 require 'spec_helper'
 require 'rspec/rails'
+require 'devise'  # Add this line to require Devise
 
 # Add additional requires below this line. Rails is not loaded until this point!
 
@@ -21,6 +23,7 @@ require 'rspec/rails'
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
 #
+# Uncomment the following line if you have any custom support files
 # Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
 # Checks for pending migration and applies them before tests are run.
@@ -55,4 +58,14 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  # Include Devise test helpers
+  config.include Devise::Test::ControllerHelpers, type: :controller
+  # If you are using request specs, also include the following:
+  # config.include Devise::Test::IntegrationHelpers, type: :request
+
+  # If you want to use Devise helpers in views or helpers, you can also add:
+  # config.include Devise::Test::ControllerHelpers, type: :view
+  # config.include Devise::Test::ControllerHelpers, type: :helper
 end
+
