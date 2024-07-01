@@ -42,8 +42,8 @@ gem 'bootsnap', '>= 1.13', require: false
 # Network IO library
 gem 'nio4r', '2.7.2'
 
-# User authentication
-gem 'devise', '~> 4.9'  # Devise for user authentication
+# Remove Devise gem for user authentication
+# gem 'devise', '~> 4.9'  # Devise for user authentication
 
 group :development, :test do
   # Debugging tools
@@ -78,7 +78,6 @@ group :development do
 
   # Application preloader
   gem 'spring', '< 3.0'
-  gem 'spring-watcher-listen', '~> 2.0.1'
 
   # Database for development
   gem 'sqlite3', '~> 1.5.0'
