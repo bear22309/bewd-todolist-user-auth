@@ -1,57 +1,61 @@
 # File: app/controllers/tasks_controller.rb
 
 class TasksController < ApplicationController
-  before_action :authenticate_user!
+  def index
+    @tasks = Task.all
+    render 'tasks/index' # can be omitted
+  end
 
-  # GET /my_tasks
   def index_by_current_user
-    @tasks = Task.where(user_id: current_user.id)
-    render json: @tasks, status: :ok
+    token = cookies.signed[:todolist_session_token]
+    session = Session.find_by(token: token)
+
+    if session
+      @tasks = session.user.tasks
+      render 'tasks/index' # can be omitted
+    else
+      render json: { tasks: [] }
+    end
   end
 
-  # POST /tasks
   def create
-    @task = Task.new(task_params)
-    @task.user = current_user
+    token = cookies.signed[:todolist_session_token]
+    session = Session.find_by(token: token)
 
-    if @task.save
-      render json: @task, status: :created
+    if session
+      user = session.user
+      @task = user.tasks.new(task_params)
+
+      if @task.save
+        render 'tasks/create' # can be omitted
+      else
+        render json: { success: false }
+      end
     else
-      render json: { errors: @task.errors.full_messages }, status: :unprocessable_entity
+      render json: { success: false }
     end
   end
 
-  # DELETE /tasks/:id
   def destroy
-    @task = Task.find_by(id: params[:id], user: current_user)
-    if @task
-      @task.destroy
-      head :no_content
+    @task = Task.find_by(id: params[:id])
+
+    if @task&.destroy
+      render json: { success: true }
     else
-      render json: { error: 'Task not found or you are not authorized' }, status: :not_found
+      render json: { success: false }
     end
   end
 
-  # PUT /tasks/:id/mark_complete
   def mark_complete
-    @task = Task.find_by(id: params[:id], user: current_user)
+    @task = Task.find_by(id: params[:id])
 
-    if @task&.update(completed: true)
-      render json: @task
-    else
-      render json: { error: 'Task not found or you are not authorized' }, status: :not_found
-    end
+    render 'tasks/update' if @task&.update(completed: true)
   end
 
-  # PUT /tasks/:id/mark_active
   def mark_active
-    @task = Task.find_by(id: params[:id], user: current_user)
+    @task = Task.find_by(id: params[:id])
 
-    if @task&.update(completed: false)
-      render json: @task
-    else
-      render json: { error: 'Task not found or you are not authorized' }, status: :not_found
-    end
+    render 'tasks/update' if @task&.update(completed: false)
   end
 
   private
@@ -60,4 +64,3 @@ class TasksController < ApplicationController
     params.require(:task).permit(:content)
   end
 end
-

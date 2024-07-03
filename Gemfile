@@ -42,9 +42,6 @@ gem 'bootsnap', '>= 1.13', require: false
 # Network IO library
 gem 'nio4r', '2.7.2'
 
-# Remove Devise gem for user authentication
-# gem 'devise', '~> 4.9'  # Devise for user authentication
-
 group :development, :test do
   # Debugging tools
   gem 'byebug', '~> 11.1.3', platforms: %i[mri mingw x64_mingw]
@@ -90,4 +87,3 @@ end
 
 # String scanner for Ruby
 gem 'strscan', '3.0.4'
-
